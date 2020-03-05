@@ -1,4 +1,9 @@
 const CoinbasePro = require('coinbase-pro')
+const Candlestick = require('../models/candlestick')
+
+function timeout(ms){
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
 
 class HistoricalService{
     constructor({ start, end, interval = 300, product }){
@@ -12,23 +17,40 @@ class HistoricalService{
     async getData(){
         const intervals = this.createRequests()
         const results = await this.performInterval(intervals)
+
         const timestamps = {}
-        const filter = results.filter({
-            
+
+        const filtered = results.filter((x, i) => {
+            const timestamp = x[0]
+            const str = `${timestamp}`
+            if (timestamps[str] !== undefined) { 
+                return false 
+            }
+            timestamps[str] = true
+            return true
         })
-        // const results = await this.client.getProductHistoricRates(this.product, {
-        //     start: this.start,
-        //     end: this.end,
-        //     granularity: 300
-        // })  
-        
-        // return results
+
+        const candlesticks = filtered.map((x) => {
+            return new Candlestick({
+                startTime: new Date(x[0] * 1e3),
+                low: x[1],
+                high: x[2],
+                open: x[3],
+                close: x[4],
+                interval: this.interval,
+                volume: x[5]
+            })
+        })
+
+        return candlesticks
+
     }
 
     async performInterval(intervals){
         if (intervals.length == 0) { return [] }
         const interval = intervals[0]
         const result = await this.performRequest(interval).then(r => r.reverse())
+        await timeout (1/3)
         const next = await this.performInterval(intervals.slice(1))
         return result.concat(next)
     }

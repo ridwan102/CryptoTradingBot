@@ -1,5 +1,8 @@
+//source: https://www.education-ecosystem.com/elliottminns/lK6rL-how-to-build-advanced-cryptocurrency-trading-bot-in-nodejs/Ag37P-how-to-build-advanced-cryptocurrency-trading-bot-5/
 //source: https://www.npmjs.com/package/coinbase-pro-node
 //source: https://www.npmjs.com/package/coinbase-pro
+//Coinbase Pro Docs: https://docs.pro.coinbase.com/#introduction
+
 
 //requires
 const program = require('commander')
@@ -33,6 +36,7 @@ const main = async function() {
     })
 
     const data = await service.getData()
+    console.log(data)
 }
 
 main()
