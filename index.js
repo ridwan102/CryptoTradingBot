@@ -3,12 +3,10 @@
 //source: https://www.npmjs.com/package/coinbase-pro
 //Coinbase Pro Docs: https://docs.pro.coinbase.com/#introduction
 
-
 //requires
 const program = require('commander')
-const Historical = require('./src/historical')
+const Backtester = require('./src/backtester')
 const config = require('./configuration')
-
 
 //sets intervals for candlesticks
 const now = new Date()
@@ -19,24 +17,23 @@ function toDate (val) {
 }
 
 program.version('1.0.0')
-    .option('-i, --interval [interval]', 'Interval in seconds for candlesticks', parseInt)
+    .option('-i, --interval [interval]', 'Interval in seconds for candlesticks', 
+            parseInt)
     .option('-p, --product [product]', 'Product identifier', 'BTC-USD')
-    .option('-s, --start [start]', 'Start time in unix seconds', toDate, yesterday)
+    .option('-s, --start [start]', 'Start time in unix seconds', 
+            toDate, yesterday)
     .option('-e, --end [end]', 'End time in unix seconds', toDate, now)
     .parse(process.argv)
 
 const main = async function() {
     const { interval, product, start, end } = program
-
-    const service = new Historical ({
-        start,
-        end,
-        product,
-        interval
+    
+    const tester = new Backtester({
+        start, end, product, interval
     })
 
-    const data = await service.getData()
-    console.log(data)
+    await tester.start()
+
 }
 
 main()
