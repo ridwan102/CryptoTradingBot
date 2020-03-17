@@ -1,6 +1,6 @@
 const Candlestick = require('../models/candlestick')
 const Historical = require('../historical')
-const { Simple } = require('../strategy')
+const { Simple, SimpleMACD } = require('../strategy')
 const randomstring = require('randomstring')
 const colors = require('colors/safe')
 
@@ -18,7 +18,7 @@ class Backtester{
     async start() {
         try {
             const history = await this.historical.getData()
-            this.strategy = new Simple({
+            this.strategy = new SimpleMACD({
                 onBuySignal: (x) => { this.onBuySignal(x) },
                 onSellSignal: (x) => { this.onSellSignal(x) }
             })

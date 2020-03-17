@@ -1,7 +1,20 @@
 //source: https://www.education-ecosystem.com/elliottminns/lK6rL-how-to-build-advanced-cryptocurrency-trading-bot-in-nodejs/Ag37P-how-to-build-advanced-cryptocurrency-trading-bot-5/
 //source: https://www.npmjs.com/package/coinbase-pro-node
 //source: https://www.npmjs.com/package/coinbase-pro
+//Indicator Source: https://www.npmjs.com/package/tulind
 //Coinbase Pro Docs: https://docs.pro.coinbase.com/#introduction
+
+/*  
+
+To run Bot: run "node index.js -s [date in unix timestamp] -e [date in unix timestamp]"
+            Ie.: "node index.js -s 1523078888 -e 1523383688"
+            -s = start date and time ; -e = end date and time 
+Current date: run "date +%s"
+Calclulate previous date: [unix timestamp] - (60 * 60 * [days in hours])
+                        Ie.: 1523554207 - (60 * 60 * 48) = 1523381407 
+                             48 = 2 days; 24 = 1 day
+
+*/
 
 //requires
 const program = require('commander')
