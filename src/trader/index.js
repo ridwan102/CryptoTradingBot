@@ -21,6 +21,7 @@ class Trader extends Runner {
     }
 
     async onBuySignal({ price, time }) {
+        console.log(`BUY BUY ${price}`)
         const id = randomstring.generate(20)
         this.strategy.positionOpened({
             price, time, size: 1.0, id
@@ -28,6 +29,7 @@ class Trader extends Runner {
     }
 
     async onSellSignal({ price, size, time, position }){
+        console.log(`SELL SELL SELL ${price}`)
         this.strategy.positionClosed({
             price, time, size, id: position.id
         })
@@ -64,10 +66,14 @@ class Trader extends Runner {
                 time: time
             })
 
-            if(this.currentCandle.state === 'closed'){
+            if(this.currentCandle.state === 'closed') {
                 const candle = this.currentCandle
                 this.currentCandle = null
                 this.history.push(candle)
+
+                this.printPositions()
+                this.printProfit()
+
             }
         } catch (error) { console.log(error) }
     }

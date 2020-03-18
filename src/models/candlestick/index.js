@@ -18,7 +18,7 @@ class Candlestick {
 
     onPrice({ price, volume, time = new Date() }) {
         if (this.state === 'closed') { 
-            throw new Error('Trying to add to closed candles tick')
+            throw new Error('Trying to add to closed candlestick')
         }
 
         this.volume = this.volume + volume
@@ -31,6 +31,8 @@ class Candlestick {
 
         const delta = (time - this.startTime) * 1e-3 // == 0.001
 
+        console.log(delta)
+        
         if (delta >= this.interval){
             this.state = 'closed'
         }
