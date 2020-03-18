@@ -1,5 +1,7 @@
 const Runner = require('../runner')
 const Ticker = require('../ticker')
+const Candlestick = require('../models/candlestick')
+const randomstring = require('randomstring')
 
 class Trader extends Runner {
 
@@ -13,11 +15,12 @@ class Trader extends Runner {
     }
 
     async start () {
-        const history = await this.historical.getData()
+        this.currentCandle = null
+        this.history = await this.historical.getData()
         this.ticker.start()
     }
 
-    async onBuySignal({ price, time }){
+    async onBuySignal({ price, time }) {
         const id = randomstring.generate(20)
         this.strategy.positionOpened({
             price, time, size: 1.0, id
@@ -31,24 +34,42 @@ class Trader extends Runner {
     }
 
     async onTick(tick) {
-        const time = Date.parse(tick.time)
+        const parsed = Date.parse(tick.time)
+        const time = isNaN(parsed) ? new Date() : new Date(parsed)
         const price = parseFloat(tick.price)
-        const volume = parseFloat(tick.volume)
+        const volume = parseFloat(tick.last_size)
 
-        console.log(`Time: ${time} Price: ${price}`)
+        console.log(`Time: ${time} Price: ${price.toFixed(2)} Volume: ${volume}`)
 
-        if (this.curentCandle) {
+        try{
+            if (this.curentCandle) {
 
-            //onPrice is whenever new price comes in you update it
-            this.currentCandle.onPrice({ price, volume, time })
-        } else {
-            this.currentCandle = new Candlestick({
-                price: price,
-                volume: volume,
-                interval: this.interval,
-                startTime: time
+                //onPrice is whenever new price comes in you update it
+                this.currentCandle.onPrice({ price, volume, time })
+            } else {
+                this.currentCandle = new Candlestick({
+                    price: price,
+                    volume: volume,
+                    interval: this.interval,
+                    startTime: time
+                })
+            }
+
+            //creates copy of history
+            const sticks = this.history.slice()
+            sticks.push(this.currentCandle)
+
+            await this.strategy.run({
+                sticks: sticks, 
+                time: time
             })
-        }
+
+            if(this.currentCandle.state === 'closed'){
+                const candle = this.currentCandle
+                this.currentCandle = null
+                this.history.push(candle)
+            }
+        } catch (error) { console.log(error) }
     }
 
     onError(error) {

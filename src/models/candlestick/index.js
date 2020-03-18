@@ -21,11 +21,12 @@ class Candlestick {
             throw new Error('Trying to add to closed candles tick')
         }
 
-        this.volume = this.volume + v
+        this.volume = this.volume + volume
 
         if (this.high < price) { this.high = price}
         if (this.low > price) {this.low = price}
 
+        //most up to date price
         this.close = price
 
         const delta = (time - this.startTime) * 1e-3 // == 0.001

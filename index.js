@@ -6,7 +6,7 @@ CoinBase Pro Source: https://www.npmjs.com/package/coinbase-pro-node
 Coinbase Pro Docs: https://docs.pro.coinbase.com/#introduction
 Indicators Source: https://www.npmjs.com/package/tulind
  
-
+To run live: node index.js --live
 To run Bot: run "node index.js -s [start time in unix seconds] -e [end time in unix seconds]"
             Ie.: "node index.js -s 1523078888 -e 1523383688"
             -s = start time in unix seconds ; -e = end time in unix seconds 
