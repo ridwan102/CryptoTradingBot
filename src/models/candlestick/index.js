@@ -30,8 +30,6 @@ class Candlestick {
         this.close = price
 
         const delta = (time - this.startTime) * 1e-3 // == 0.001
-
-        console.log(delta)
         
         if (delta >= this.interval){
             this.state = 'closed'

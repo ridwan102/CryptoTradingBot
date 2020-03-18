@@ -15,7 +15,7 @@ class SimpleMACD extends Strategy {
         const signalPeriod = 9
         const indicator = tulind.indicators.macd.indicator
 
-        const results = await indicator([prices], [shortPeriod, longPeriod, signalPeriod])
+        const results = await indicator([prices], [12, 26, 9])
 
         const histogram = results[2]
         const signal = results[1]
