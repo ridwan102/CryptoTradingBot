@@ -12,10 +12,10 @@ class SimpleStrategy extends Strategy {
         const open = this.openPositions()
 
         if (open.length == 0) {
-            if (last < penu) {
+            if (last > penu) {
                 this.onBuySignal({ price, time })
             }
-        } else if ( last > penu ) {
+        } else if ( last < penu ) {
             open.forEach(p => {
                 
                 //only sells if price is 1% above buy price

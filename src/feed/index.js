@@ -1,7 +1,7 @@
 const CoinbasePro = require('coinbase-pro')
 const config = require('../../configuration')
 
-const key = configt.get('COINBASE_PRO_API_KEY')
+const key = config.get('COINBASE_PRO_API_KEY')
 const secret = config.get('COINBASE_PRO_API_SECRET')
 const passphrase = config.get('COINBASE_PRO_API_PASSPHRASE')
 const wsUrl = config.get('COINBASE_PRO_WS_URL')
@@ -41,6 +41,7 @@ class Feed {
     }
 
     async stop() {
+        this.running = false
         this.socket.close()
     }
 }
