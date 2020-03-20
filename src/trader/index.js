@@ -1,5 +1,6 @@
 const Runner = require('../runner')
 const Ticker = require('../ticker')
+const Broker = require('../broker')
 const Candlestick = require('../models/candlestick')
 const randomstring = require('randomstring')
 
@@ -7,6 +8,9 @@ class Trader extends Runner {
 
     constructor (data) {
         super(data)
+        this.isLive = data.live
+        this.funds = data.funds
+        this.broker = new Broker({ isLive: this.isLive })
         this.ticker = new Ticker({
             product: this.product,
             onTick: async (tick) => { await this.onTick(tick) },
@@ -21,6 +25,7 @@ class Trader extends Runner {
     }
 
     async onBuySignal({ price, time }) {
+        const result = await this.broker.buy({ funds: this.funds, price })
         console.log(`BUY BUY ${price}`)
         const id = randomstring.generate(20)
         this.strategy.positionOpened({
