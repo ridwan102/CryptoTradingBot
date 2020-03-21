@@ -11,7 +11,7 @@ class Trader extends Runner {
         super(data)
         this.isLive = data.live
         this.funds = data.funds
-        this.broker = new Broker({ isLive: this.isLive })
+        this.broker = new Broker({ isLive: this.isLive, product: this.product })
         this.ticker = new Ticker({
             product: this.product,
             onTick: async (tick) => { await this.onTick(tick) },
@@ -23,20 +23,23 @@ class Trader extends Runner {
         this.currentCandle = null
         this.history = await this.historical.getData()
         this.ticker.start()
+        this.broker.start()
     }
 
     async onBuySignal({ price, time }) {
         console.log(`BUY BUY BUY ${price}`)
         const result = await this.broker.buy({ funds: this.funds, price })
+        if (!result) { return }
         const id = randomstring.generate(20)
         this.strategy.positionOpened({
             price: result.price, time, size: result.size, id
         })
     }
 
-    async onSellSignal({ price, size, time, position }){
+    async onSellSignal({ price, size, time, position }) {
         console.log(`SELL SELL SELL ${price}`)
         const result = await this.broker.sell({ size, price })
+        if (!result) { return }
         this.strategy.positionClosed({
             price: result.price, time, size: result.size, id: position.id
         })

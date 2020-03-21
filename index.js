@@ -50,7 +50,7 @@ program.version('1.0.0')
     .option('-t, --strategy [strategy]', 'Strategy Type')
     .option('-r, --type [type]', 'Run type')
     .option('-f, --funds [funds]', 'Amount of money to use', parseInt)
-    .option('-l, --live', 'Run Live')
+    .option('-l, --live', 'Run live')
     .parse(process.argv)
 
 const main = async function() {

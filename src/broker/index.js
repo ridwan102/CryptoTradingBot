@@ -1,7 +1,7 @@
 //Organizes actual trades
 
 const Feed = require('../feed')
-const uuid = require('uuid/v1')
+const { v4: uuidv4 } = require('uuid');
 const CoinbasePro = require('coinbase-pro')
 const config = require('../../configuration')
 const key = config.get('COINBASE_PRO_API_KEY')
@@ -23,7 +23,7 @@ class Broker {
         this.tokens = {}
         this.callbacks = {}
         this.orders = {}
-        this.clinet = new CoinbasePro.AuthenticatedClient(key, secret, passphrase, apiUrl)
+        this.client = new CoinbasePro.AuthenticatedClient(key, secret, passphrase, apiUrl)
     }
 
     start() {
@@ -100,16 +100,24 @@ class Broker {
 
     }
 
+    async placeBuyOrder({ price, size }) {
+
+    }
+
+    async placeSellOrder({ price, size }) {
+        
+    }
+
     async buy({ price, funds }) {
         if (!this.isLive) {
             return { size: funds / price, price: price }
         }
 
         //buys and sells are not duplicated
-        if (this.state !== 'running') { return }
+        if (this.state !== 'running') { return null }
         this.state ='buying'
 
-        const token = uuid()
+        const token = uuidv4()
         this.tokens[token] = 'buy'
 
         const lock = () => {
@@ -119,16 +127,23 @@ class Broker {
         }
 
         const data = this.generateMarketData({ token, funds })
-        const order = await this.clinet.buy(data)
-        if (order.message) {
-            this.state ='running'
-            throw new Error(order.message)
+        try {
+            const order = await this.client.buy(data)
+            if (order.message) {
+                this.state ='running'
+                throw new Error(order.message)
+            }
+
+            const filled = await lock()
+            console.log('locking')
+            this.state = 'running'
+            return filled
+            } catch (error) {
+                this.state = 'running'
+                throw error
+            }
+
         }
-
-        const filled = await lock()
-        return filled
-
-    }
 
     async sell({ price, size }) {
         if(!this.live) {
@@ -139,7 +154,7 @@ class Broker {
         if (this.state !== 'running') { return }
         this.state ='selling'
 
-        const token = uuid() 
+        const token = uuidv4() 
         this.tokens[token] = 'sell'
 
         const lock = () => {
@@ -148,14 +163,20 @@ class Broker {
             })
         }
 
-        const data = this.generateMarketData ({ token, size })
-        const order = await this.client.sell(data)
-        if (order.message) {
+        try {
+            const data = this.generateMarketData ({ token, size })
+            const order = await this.client.sell(data)
+            if (order.message) {
+                this.state = 'running'
+                throw new Error(order.message)
+            }
+            const filled = await lock()
             this.state = 'running'
-            throw new Error(order.message)
+            return filled
+        } catch (error) {
+            this.state = 'running'
+            throw error
         }
-        const filled = await lock()
-        return filled
     }
 
     generateMarketData({ token, funds, size }) {
@@ -163,12 +184,22 @@ class Broker {
             product_id: this.product,
             type: 'market', 
             client_oid: token, //object id client sets
-            funds: funds
         }
 
         const amount = funds ? { funds } : { size }
         
         return Object.assign(order, amount)
+    }
+
+    //Limit Orders
+    generateLimitData({ token, size, price }) {
+        const order = {
+            product_id: this.product,
+            type: 'limit',
+            client_oid: token,
+            size: size,
+            price: price
+        }
     }
 }
 
