@@ -1,3 +1,12 @@
+#To build: docker build . -t ridwan102/advcryptobot
+#To run: docker run --name advbot ridwan102/advcryptobot
+#To run with API keys: docker run --name advbot -e "COINBASE_PRO_API_KEY = YOUR-COINBASE-PRO-KEY" 
+#                      -e "COINBASE_PRO_API_SECRET = YOUR-COINBASE-PRO-SECRET" 
+#                      -e "COINBASE_PRO_API_PASSPHRASE = YOUR-COINBASE-PRO-PASSPHRASE"
+#                       ridwan102/cryptobot
+#                       Or use docker secrets to create API with coinbase: https://docs.docker.com/engine/reference/commandline/secret_create/#examples
+#To remove file (?): docker rm advbot
+
 FROM node:alpine
 
 RUN apk --update add git python make g++
