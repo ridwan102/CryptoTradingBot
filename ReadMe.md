@@ -1,4 +1,8 @@
-# Instructions
+# Welcome to CryptoBot!
+
+This bot links up to your Coinbase Pro account and buys and sells based on your strategies.
+
+## Instructions
 
 To run live: node index.js --live
 
@@ -22,7 +26,7 @@ Use Different Strategies: node index.js -s [start time in unix seconds] -e [end 
 Example: node index.js -s 1523379430 -e 1523984230 -t macd
 Today: node index.js -s 1584044093 -e 1584476093 -t macd
 
-# Sources
+## Sources
 
 Building Trading Bot Guide: https://www.education-ecosystem.com/elliottminns/lK6rL-how-to-build-advanced-cryptocurrency-trading-bot-in-nodejs/Ag37P-how-to-build-advanced-cryptocurrency-trading-bot-5/
 
